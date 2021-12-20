@@ -1,0 +1,12 @@
+.vision-container {
+    background: #D3D3D3;
+    display: inline-block;
+    vertical-align: middle;
+    transform-origin: top left;
+}
+
+.yoga-feedback {
+    width: "30px";
+    height: "30px";
+    background-color: gray;
+}
