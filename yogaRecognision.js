@@ -20,6 +20,7 @@ class YogaRecognition {
         this.currYogaPoseGoal;
         this.currYogaPoseGoalName;
         this.shouldReroll = true;
+        this.poseStartTime = NaN;
     }
 
     /**
@@ -82,6 +83,7 @@ class YogaRecognition {
             }
         }
         
+        this.isPoseCorrect = isPoseCorrect;
         return isPoseCorrect;
     }
 
@@ -123,6 +125,16 @@ class YogaRecognition {
         yogaRecognisor.computeAllAngles(landmarks);
         yogaRecognisor.comparePose(this.currYogaPoseGoal, 30);
         yogaRecognisor.drawIncorrectJoints(canvas);
+        
+        if (this.isPoseCorrect && Number.isNaN(this.poseStartTime)) {
+            this.poseStartTime = Date.now();
+        } else if (!this.isPoseCorrect) {
+            this.poseStartTime = NaN;
+        }
+
+        if (Date.now() - this.poseStartTime > 3000) {
+            console.log("poggers");
+        }
 
         console.log(this.currYogaPoseGoalName);
     }
