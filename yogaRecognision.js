@@ -17,8 +17,9 @@ class YogaRecognition {
 
         this.poseLandmarks;
         this.isPoseCorrect;
-        this.currYogaPoseGoal;
+        this.currYogaPoseGoalAngles;
         this.currYogaPoseGoalName;
+        this.currYogaPoseGoalImagePath;
         this.shouldReroll = true;
         this.poseStartTime = NaN;
     }
@@ -112,7 +113,7 @@ class YogaRecognition {
         const keys = Object.keys(yogaPoseAngles);
         const randomKey = keys[ keys.length * Math.random() << 0]
 
-        this.currYogaPoseGoal = yogaPoseAngles[randomKey];
+        this.currYogaPoseGoalAngles = yogaPoseAngles[randomKey].angles;
         this.currYogaPoseGoalName = randomKey;
     };
 
@@ -123,7 +124,7 @@ class YogaRecognition {
         }
 
         yogaRecognisor.computeAllAngles(landmarks);
-        yogaRecognisor.comparePose(this.currYogaPoseGoal, 30);
+        yogaRecognisor.comparePose(this.currYogaPoseGoalAngles, 30);
         yogaRecognisor.drawIncorrectJoints(canvas);
         
         if (this.isPoseCorrect && Number.isNaN(this.poseStartTime)) {
@@ -132,7 +133,7 @@ class YogaRecognition {
             this.poseStartTime = NaN;
         }
 
-        if (Date.now() - this.poseStartTime > 3000) {
+        if (Date.now() - this.poseStartTime > 5000) {
             console.log("poggers");
         }
 
