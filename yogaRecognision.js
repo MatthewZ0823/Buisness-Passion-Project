@@ -140,8 +140,8 @@ class YogaRecognition {
             this.poseStartTime = NaN;
         }
 
-        if (Date.now() - this.poseStartTime > 5000) {
-            console.log("poggers");
+        if (Date.now() - this.poseStartTime > 3000) {
+            this.shouldReroll = true;
         }
 
         console.log(this.targetYogaPoseName);

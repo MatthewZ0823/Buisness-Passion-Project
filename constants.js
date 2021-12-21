@@ -27,8 +27,8 @@ const yogaPoseAngles = {
     },
     warrior3: {
         angles: {
-            leftShoulder: 180,
-            rightShoulder: 180,
+            leftShoulder: 160,
+            rightShoulder: 160,
             leftElbow: 180,
             rightElbow: 180, 
             leftWaist: 180,
