@@ -37,9 +37,7 @@ function onResults(results) {
   // grid.updateLandmarks(results.poseWorldLandmarks);
 
   // The code underneath runs the yoga pose recognisor thing
-  yogaRecognisor.computeAllAngles(visionResults.poseLandmarks);
-  console.log(yogaRecognisor.comparePose(yogaPoseAngles.warrior2, 30));
-  yogaRecognisor.drawIncorrectJoints(canvasCtx);
+  yogaRecognisor.runYogaGame(visionResults.poseLandmarks, canvasCtx);
   // yogaRecognisor.printIncorrectAngles();
 }
 

@@ -17,6 +17,9 @@ class YogaRecognition {
 
         this.poseLandmarks;
         this.isPoseCorrect;
+        this.currYogaPoseGoal;
+        this.currYogaPoseGoalName;
+        this.shouldReroll = true;
     }
 
     /**
@@ -101,5 +104,26 @@ class YogaRecognition {
                 this.drawIncorrectJoint(canvasCtx, angleName);
             }
         }
+    }
+
+    rerollRandomYogaPose() {
+        const keys = Object.keys(yogaPoseAngles);
+        const randomKey = keys[ keys.length * Math.random() << 0]
+
+        this.currYogaPoseGoal = yogaPoseAngles[randomKey];
+        this.currYogaPoseGoalName = randomKey;
+    };
+
+    runYogaGame(landmarks, canvas) {
+        if (this.shouldReroll) {
+            this.rerollRandomYogaPose();
+            this.shouldReroll = false;
+        }
+
+        yogaRecognisor.computeAllAngles(landmarks);
+        yogaRecognisor.comparePose(this.currYogaPoseGoal, 30);
+        yogaRecognisor.drawIncorrectJoints(canvas);
+
+        console.log(this.currYogaPoseGoalName);
     }
 }
