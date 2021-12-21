@@ -17,9 +17,9 @@ class YogaRecognition {
 
         this.poseLandmarks;
         this.isPoseCorrect;
-        this.currYogaPoseGoalAngles;
-        this.currYogaPoseGoalName;
-        this.currYogaPoseGoalImagePath;
+        this.targetYogaPoseAngles;
+        this.targetYogaPoseName;
+        this.targetYogaPoseImagePath = "";
         this.shouldReroll = true;
         this.poseStartTime = NaN;
     }
@@ -46,7 +46,7 @@ class YogaRecognition {
         }
     
         return result;
-    }    
+    };   
 
     /**
      * Computes all the important angles in a pose and stores them inside the angles object
@@ -63,7 +63,7 @@ class YogaRecognition {
         this.angles.rightWaist = this.getAngle(poseLandmarks[12], poseLandmarks[24], poseLandmarks[26]);
         this.angles.leftKnee = this.getAngle(poseLandmarks[23], poseLandmarks[25], poseLandmarks[27]);
         this.angles.rightKnee = this.getAngle(poseLandmarks[24], poseLandmarks[26], poseLandmarks[28]);
-    }
+    };
 
     /**
      * Compares the last computed pose to a yoga pose
@@ -86,7 +86,7 @@ class YogaRecognition {
         
         this.isPoseCorrect = isPoseCorrect;
         return isPoseCorrect;
-    }
+    };
 
     printIncorrectAngles() {
         for (const jointName in this.comparePoseData) {
@@ -94,12 +94,12 @@ class YogaRecognition {
                 console.log(jointName);
             }
         }
-    }
+    };
 
     drawIncorrectJoint(canvasCtx, jointName) {
         canvasCtx.fillStyle = 'red';
         canvasCtx.fillRect(this.poseLandmarks[jointLandmarkNumbers[jointName]].x * 640 - 10, this.poseLandmarks[jointLandmarkNumbers[jointName]].y * 480 - 10, 20, 20);
-    }
+    };
 
     drawIncorrectJoints(canvasCtx) {
         for (const angleName in this.comparePoseData) {
@@ -107,24 +107,31 @@ class YogaRecognition {
                 this.drawIncorrectJoint(canvasCtx, angleName);
             }
         }
-    }
+    };
 
     rerollRandomYogaPose() {
         const keys = Object.keys(yogaPoseAngles);
         const randomKey = keys[ keys.length * Math.random() << 0]
 
-        this.currYogaPoseGoalAngles = yogaPoseAngles[randomKey].angles;
-        this.currYogaPoseGoalName = randomKey;
+        this.targetYogaPoseAngles = yogaPoseAngles[randomKey].angles;
+        this.targetYogaPoseImagePath = yogaPoseAngles[randomKey].imagePath;
+        this.targetYogaPoseName = randomKey;
     };
 
-    runYogaGame(landmarks, canvas) {
+    renderTargetYogaPose(imageEl) {
+        imageEl.src = this.targetYogaPoseImagePath;
+    };
+
+    runYogaGame(landmarks, canvas, imageEl) {
         if (this.shouldReroll) {
             this.rerollRandomYogaPose();
             this.shouldReroll = false;
         }
 
+        this.renderTargetYogaPose(imageEl);
+
         yogaRecognisor.computeAllAngles(landmarks);
-        yogaRecognisor.comparePose(this.currYogaPoseGoalAngles, 30);
+        yogaRecognisor.comparePose(this.targetYogaPoseAngles, 30);
         yogaRecognisor.drawIncorrectJoints(canvas);
         
         if (this.isPoseCorrect && Number.isNaN(this.poseStartTime)) {
@@ -137,6 +144,6 @@ class YogaRecognition {
             console.log("poggers");
         }
 
-        console.log(this.currYogaPoseGoalName);
-    }
+        console.log(this.targetYogaPoseName);
+    };
 }

@@ -3,6 +3,7 @@ const newVideoElement = document.getElementsByClassName('new_input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
+const targetYogaPoseImageElement = document.getElementsByClassName('target-yoga-image')[0];
 
 const yogaRecognisor = new YogaRecognition();
 
@@ -37,7 +38,7 @@ function onResults(results) {
   // grid.updateLandmarks(results.poseWorldLandmarks);
 
   // The code underneath runs the yoga pose recognisor thing
-  yogaRecognisor.runYogaGame(visionResults.poseLandmarks, canvasCtx);
+  yogaRecognisor.runYogaGame(visionResults.poseLandmarks, canvasCtx, targetYogaPoseImageElement);
   // yogaRecognisor.printIncorrectAngles();
 }
 
