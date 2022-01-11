@@ -21,7 +21,18 @@ class YogaRecognition {
         this.targetYogaPoseName;
         this.targetYogaPoseImagePath = "";
         this.shouldReroll = true;
-        this.poseStartTime = NaN;
+
+        this.previousUpdateTime = Date.now();
+        this.totalPoseTime = 0;
+        this.extraTime = 0;
+
+        this.posesCompleted = 0;
+        this.gameStartTime = Date.now();
+
+        this.dingSoundEffect = new Audio('SoundEffects/Ding-Sound-Effect.mp3');
+        this.missionPassedSoundEffect = new Audio('SoundEffects/Mission-Passed-Sound-Effect.mp3');
+
+        this.yogaGameTextOutput = document.getElementById('yoga-game-text-output');
     }
 
     /**
@@ -118,6 +129,11 @@ class YogaRecognition {
         this.targetYogaPoseName = randomKey;
     };
 
+    handleRerollButton() {
+        this.shouldReroll = true;
+        this.extraTime += 10000;
+    }
+
     renderTargetYogaPose(imageEl) {
         imageEl.src = this.targetYogaPoseImagePath;
     };
@@ -126,6 +142,7 @@ class YogaRecognition {
         if (this.shouldReroll) {
             this.rerollRandomYogaPose();
             this.shouldReroll = false;
+            this.totalPoseTime = 0;
         }
 
         this.renderTargetYogaPose(imageEl);
@@ -133,17 +150,24 @@ class YogaRecognition {
         yogaRecognisor.computeAllAngles(landmarks);
         yogaRecognisor.comparePose(this.targetYogaPoseAngles, 30);
         yogaRecognisor.drawIncorrectJoints(canvas);
-        
-        if (this.isPoseCorrect && Number.isNaN(this.poseStartTime)) {
-            this.poseStartTime = Date.now();
-        } else if (!this.isPoseCorrect) {
-            this.poseStartTime = NaN;
-        }
 
-        if (Date.now() - this.poseStartTime > 3000) {
+        if (this.isPoseCorrect) {
+            this.totalPoseTime += Date.now() - this.previousUpdateTime;
+        } 
+
+        this.previousUpdateTime = Date.now();
+
+        if (this.totalPoseTime > 3000) {
             this.shouldReroll = true;
+            this.dingSoundEffect.play();
+            this.posesCompleted++;
         }
 
-        console.log(this.targetYogaPoseName);
+        if (this.posesCompleted === 5) {
+            console.log("Completed 5 Poses!");
+            this.yogaGameTextOutput.innerHTML = `Completed 5 Poses! You took ${(Date.now() - this.gameStartTime) / 1000} seconds, plus ${this.extraTime /1000} seconds extra. <br> Total: ${(Date.now() - this.gameStartTime + this.extraTime) / 1000} seconds`;
+            this.missionPassedSoundEffect.play();
+            this.posesCompleted = 0;
+        }
     };
 }

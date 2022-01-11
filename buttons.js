@@ -1,6 +1,7 @@
 const elementsToRotate = document.getElementsByClassName("element-to-rotate");
 const rotationWrapperElements = document.getElementsByClassName("rotation-wrapper");
 const rotateButtonElement = document.getElementById('rotate_button');
+const rerollButtonElement = document.getElementById('reroll-button');
 
 let isPortrait = false;
 function handleRotateButton() {
@@ -17,7 +18,7 @@ function handleRotateButton() {
           currRotationWrapperElement.style.width = `${currElementWidth}px`;
           currRotationWrapperElement.style.height = `${currElementHeight}px`;
           currElementToRotate.classList.remove("rotate-me");
-        } else{
+        } else {
           currRotationWrapperElement.style.width = `${currElementHeight}px`;
           currRotationWrapperElement.style.height = `${currElementWidth}px`;      
           currElementToRotate.classList.add("rotate-me");
@@ -32,3 +33,9 @@ function handleRotateButton() {
 }
 
 rotateButtonElement.addEventListener("click", handleRotateButton);
+
+function handleRerollButton() {
+  yogaRecognisor.handleRerollButton();
+}
+
+rerollButtonElement.addEventListener("click", handleRerollButton);

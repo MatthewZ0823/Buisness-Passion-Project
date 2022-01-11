@@ -29,3 +29,12 @@
     left: 50%;
     transform: translate(-50%, -50%) rotate(90deg);
 }
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+#yoga-game-text-output {
+    background: palegoldenrod;
+}
