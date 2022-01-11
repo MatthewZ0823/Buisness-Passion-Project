@@ -24,9 +24,10 @@ function handleRotateButton() {
           currElementToRotate.classList.add("rotate-me");
         }
     
-        console.log(`Box Offset Width: ${currElementToRotate.offsetWidth}`);
-        console.log(`Box Offset Height: ${currElementToRotate.offsetHeight}`);
-        console.log("=================");
+        // console.log(currElementToRotate);
+        // console.log(`Box Offset Width: ${currElementToRotate.offsetWidth}`);
+        // console.log(`Box Offset Height: ${currElementToRotate.offsetHeight}`);
+        // console.log("=================");
     }
     
     isPortrait = !isPortrait;

@@ -39,7 +39,6 @@ function onResults(results) {
 
   // The code underneath runs the yoga pose recognisor thing
   yogaRecognisor.runYogaGame(visionResults.poseLandmarks, canvasCtx, targetYogaPoseImageElement);
-  // yogaRecognisor.printIncorrectAngles();
 }
 
 const pose = new Pose({locateFile: (file) => {

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/control_utils_3d.js" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="vision-container">
+      <!-- Here so code doesn't get mad at me -->
+      <video class="input_video" height="0"></video> 
+      <!-- Webcam Footage, Set width greater than 0 to see it, and then add rotation thingy -->
+      <video autoplay="true" class="new_input_video" width="0px"></video>
+      <!-- Webcam Footage + Mediapipe Output -->
+      <div class="rotation-wrapper">
+        <canvas class="output_canvas element-to-rotate" width="640px" height="480px"></canvas>
+      </div>
+    </div>
+    <div class="control-panel"> 
+      <button id="rotate_button">Rotate 90 Degrees</button>
+      <p id="make-shift-console"></p>
+    </div>
+  </div>
+
+  <script src="constants.js"></script>
+  <script src="buttons.js"></script>
+  <script src="dinoGame.js"></script>
+  <script src="vision.js"></script>
+</body>
+</html>

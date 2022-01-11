@@ -15,10 +15,11 @@
 <body>
   <div class="container">
     <div class="vision-container">
-      <video class="input_video" height="0"></video>
-      <div class="rotation-wrapper">
-        <video autoplay="true" class="new_input_video element-to-rotate"></video>
-      </div>
+      <!-- Here so code doesn't get mad at me -->
+      <video class="input_video" height="0"></video> 
+      <!-- Webcam Footage, Set width greater than 0 to see it, and then add rotation thingy -->
+      <video autoplay="true" class="new_input_video" width="0px"></video>
+      <!-- Webcam Footage + Mediapipe Output -->
       <div class="rotation-wrapper">
         <canvas class="output_canvas element-to-rotate" width="640px" height="480px"></canvas>
       </div>
