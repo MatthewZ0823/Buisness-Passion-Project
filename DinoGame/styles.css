@@ -1,0 +1,30 @@
+.vision-container {
+    background: #D3D3D3;
+    display: flex;
+    vertical-align: middle;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.rotation-wrapper {
+    background-color: blue;
+    border: solid 1px;
+    margin: 5px;
+    position: relative;
+}
+
+.rotate-me {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+}
