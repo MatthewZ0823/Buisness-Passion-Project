@@ -3,9 +3,10 @@ const newVideoElement = document.getElementsByClassName('new_input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
-const targetYogaPoseImageElement = document.getElementsByClassName('target-yoga-image')[0];
+const bgCanvasElement = document.getElementsByClassName('bg')[0];
+const bgCanvasCtx = bgCanvasElement.getContext('2d');
 
-const yogaRecognisor = new YogaRecognition();
+const dinoGame = new DinoGame();
 
 let visionResults;
 
@@ -37,15 +38,21 @@ function onResults(results) {
 
   // grid.updateLandmarks(results.poseWorldLandmarks);
 
-  // The code underneath runs the yoga pose recognisor thing
-  yogaRecognisor.runYogaGame(visionResults.poseLandmarks, canvasCtx, targetYogaPoseImageElement);
+  // Code to run dinogame
+  bgCanvasCtx.clearRect(0, 0, bgCanvasElement.width, bgCanvasElement.height);
+  updateCalibration();
+  dinoGame.getLandmarks(visionResults.poseLandmarks);
+  dinoGame.drawFloor(bgCanvasCtx);
+  dinoGame.drawAllScaledObstacles(bgCanvasCtx);
+  console.log(dinoGame.isPlayerTouchingObstacle(bgCanvasCtx));
 }
+
 
 const pose = new Pose({locateFile: (file) => {
   return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
 }});
 pose.setOptions({
-  modelComplexity: 1,
+  modelComplexity: 0,
   smoothLandmarks: true,
   enableSegmentation: false,
   smoothSegmentation: true,

@@ -14,24 +14,29 @@
 
 <body>
   <div class="container">
-    <div class="vision-container">
-      <!-- Here so code doesn't get mad at me -->
-      <video class="input_video" height="0"></video> 
-      <!-- Webcam Footage, Set width greater than 0 to see it, and then add rotation thingy -->
-      <video autoplay="true" class="new_input_video" width="0px"></video>
-      <!-- Webcam Footage + Mediapipe Output -->
-      <div class="rotation-wrapper">
-        <canvas class="output_canvas element-to-rotate" width="640px" height="480px"></canvas>
+    <div class="dino-container">
+      <canvas class="bg" width="1000px" height="640px"></canvas>
+      <div class="vision-container">
+        <!-- Here so code doesn't get mad at me -->
+        <video class="input_video" height="0"></video> 
+        <!-- Webcam Footage, Set width & height greater than 0 to see it, and then add rotation thingy -->
+        <video autoplay="true" class="new_input_video" width="0px" height="0px"></video>
+        <!-- Webcam Footage + Mediapipe Output -->
+        <div class="rotation-wrapper">
+          <canvas class="output_canvas element-to-rotate rotate-me" width="640px" height="480px"></canvas>
+        </div>
       </div>
     </div>
-    <div class="control-panel"> 
-      <button id="rotate_button">Rotate 90 Degrees</button>
+    <div class="control-panel">
+      <input type="number" placeholder="Height..." id="height-input">
+      <button id="calibrate-button"> Callibrate Height </button> 
+      <p id="calibration-timer"></p>
       <p id="make-shift-console"></p>
     </div>
   </div>
 
   <script src="constants.js"></script>
-  <script src="buttons.js"></script>
+  <script src="button.js"></script>
   <script src="dinoGame.js"></script>
   <script src="vision.js"></script>
 </body>

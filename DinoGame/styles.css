@@ -1,7 +1,21 @@
 .vision-container {
-    background: #D3D3D3;
     display: flex;
     vertical-align: middle;
+    transform: translate(0%, calc(-100% - 3px));
+}
+
+.bg {
+    width: 1000px; /** Set this equal to container width **/
+    border: 3px solid;  
+    z-index: 1;
+}
+
+.dino-container {
+    width: 1000px;
+    height: 640px; /** Set this equal to vision-container height **/
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .container {
@@ -11,10 +25,11 @@
 }
 
 .rotation-wrapper {
-    background-color: blue;
-    border: solid 1px;
-    margin: 5px;
     position: relative;
+    width: 480px;
+    height: 640px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .rotate-me {

@@ -1,12 +1,9 @@
-const jointLandmarkNumbers = {
-    leftShoulder: 11,
-    rightShoulder: 12,
-    leftElbow: 13,
-    rightElbow: 14, 
-    leftWaist: 23,
-    rightWaist: 24,
-    leftKnee: 25,
-    rightKnee: 26,
+const defaultBox = {
+    x: 10,
+    y: 10,
+    width: 100,
+    height: 100,
+    speed: 10
 };
 
 const videoWidth = 640;
