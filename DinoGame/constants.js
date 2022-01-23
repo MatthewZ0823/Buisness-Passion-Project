@@ -17,10 +17,11 @@ const keypointNeighbors = [
     [14, 16],
 ];
 
-const defaultBox = {
+const testBox = {
     x: 10,
     y: 10,
     width: 150,
     height: 150,
-    speed: 10
+    speed: 10,
+    color: 'blue',
 };

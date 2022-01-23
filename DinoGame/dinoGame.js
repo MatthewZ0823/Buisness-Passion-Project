@@ -10,7 +10,12 @@ class DinoGame {
         // Where the floor is at in terms of pixels below the cieling
         this.floorYLevel;
 
+        this.nextObstacleSpawnTime = null;
+        this.isGameStarted = false;
+
         this.obstacles = [];
+
+        this.reverbFartSFX = new Audio('SoundEffects/ReverbFartSFX.mp3');
     }
 
     getLandmarks(landmarks) {
@@ -31,19 +36,23 @@ class DinoGame {
      * @param {int} width width of obstacle, in cm
      * @param {int} height height of obstacle, in cm
      * @param {int} speed speed of obstacle, in cm/frame
+     * @param {string} color color of obstacle
      */
-    createNewObstacle(x, y, width, height, speed) {
+    createNewObstacle(x, y, width, height, speed, color) {
         this.obstacles.push({
             x: x,
             y: y,
             width: width,
             height: height,
-            speed: speed
+            speed: speed,
+            color: color,
         });
     }
 
-    drawObstacle(canvasCtx, x, y, width, height) {
-        canvasCtx.fillStyle = 'red';
+    drawObstacle(canvasCtx, x, y, width, height, boxColor) {
+        const color = boxColor || 'black';
+
+        canvasCtx.fillStyle = color;
         canvasCtx.fillRect(x, y, width, height);
     }
 
@@ -55,27 +64,38 @@ class DinoGame {
      * @param {int} width width of obstacle, in cm
      * @param {int} height height of obstacle, in cm
      */
-    drawScaledObstacle(canvasCtx, x, y, width, height) {
-        this.drawObstacle(canvasCtx, x * this.scale, y * this.scale, width * this.scale, height * this.scale);
+    drawScaledObstacle(canvasCtx, x, y, width, height, color) {
+        this.drawObstacle(canvasCtx, x * this.scale, y * this.scale, width * this.scale, height * this.scale, color);
     }
 
     drawAllScaledObstacles(canvasCtx) {
         for (let i = 0; i < this.obstacles.length; i++) {
             const currObstacle = this.obstacles[i];
 
-            this.drawScaledObstacle(canvasCtx, currObstacle.x, currObstacle.y, currObstacle.width, currObstacle.height);
+            this.drawScaledObstacle(canvasCtx, currObstacle.x, currObstacle.y, currObstacle.width, currObstacle.height, currObstacle.color);
             currObstacle.x += currObstacle.speed;
 
             // Deletes Obstacles if they fly too far off screen
-            if (currObstacle.x >= 1000) {
+            if (currObstacle.x >= (1000 / this.scale)) {
                 this.obstacles.splice(i ,1);   
             }    
         }
     }
 
-    createDefaultBox() {
-        const defaultBoxCopy = Object.assign({}, defaultBox);
-        this.obstacles.push(defaultBoxCopy); 
+    createTestBox() {
+        const testBoxCopy = Object.assign({}, testBox);
+        this.obstacles.push(testBoxCopy); 
+    }
+
+    createShortObstacle() {
+        this.obstacles.push({
+            x: 10,
+            y: (this.floorYLevel / this.scale) - 20,
+            width: 20,
+            height: 20,
+            speed: 10, 
+            color: 'green',
+        });
     }
 
     // Checks if any of the landmarks of the player are in bounds of any of the obstacles
@@ -92,6 +112,7 @@ class DinoGame {
             for (let j = 0; j < this.obstacles.length; j++) {
                 if ((this.obstacles[j].x + this.obstacles[j].width) >= xPos && this.obstacles[j].x <= xPos) {
                     if ((this.obstacles[j].y + this.obstacles[j].height) >= yPos && this.obstacles[j].y <= yPos) {
+                        this.reverbFartSFX.play();
                         return true;
                     }
                 }
@@ -101,7 +122,74 @@ class DinoGame {
         return false;
     }
 
+    // returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
+    intersects(a,b,c,d,p,q,r,s) {
+        let det, gamma, lambda;
+        det = (c - a) * (s - q) - (r - p) * (d - b);
+        if (det === 0) {
+            return false;
+        } else {
+            lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+            gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+            return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+        }
+    };
+    
+    isLineTouchingObstacles() {
+        if (this.landmarks == null) {
+            return;
+        }
+
+        for (let i = 0; i < this.obstacles.length; i++) {
+            const obstacle = this.obstacles[i];
+            
+            for (let j = 0; j < keypointNeighbors.length; j++) {
+                const xPos1 = (this.landmarks[keypointNeighbors[j][0]].x + 260) * (1/this.scale);
+                const yPos1 = this.landmarks[keypointNeighbors[j][0]].y * (1/this.scale);
+                const xPos2 = (this.landmarks[keypointNeighbors[j][1]].x + 260) * (1/this.scale);
+                const yPos2 = this.landmarks[keypointNeighbors[j][1]].y * (1/this.scale);
+
+                // Check if intersects top line
+                if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y, obstacle.x + obstacle.width, obstacle.y)) {
+                    this.reverbFartSFX.play();
+                    return true;
+                }
+                
+                // Check if intersects left line
+                if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y, obstacle.x, obstacle.y + obstacle.height)) {
+                    this.reverbFartSFX.play();
+                    return true;
+                }
+                
+                // Check if intersects bot line
+                if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y + obstacle.height, obstacle.x + obstacle.width, obstacle.y + obstacle.height)) {
+                    this.reverbFartSFX.play();
+                    return true;
+                }
+                
+                // Check if intersects right line
+                if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x + obstacle.width, obstacle.y, obstacle.x + obstacle.width, obstacle.y + obstacle.height)) {
+                    this.reverbFartSFX.play();
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
     drawFloor(canvasCtx) {
-        this.drawObstacle(canvasCtx, 0, dinoGame.floorYLevel + 10, 1000, 300);
+        this.drawObstacle(canvasCtx, 0, dinoGame.floorYLevel, 1000, 300);
+    }
+
+    updateObstacleGenerator() {
+        if (this.nextObstacleSpawnTime === null) {
+            this.nextObstacleSpawnTime = Date.now() + Math.floor(Math.random() * 2001) + 2000;
+        }
+
+        if (Date.now() >= this.nextObstacleSpawnTime) {
+            this.createShortObstacle();
+            this.nextObstacleSpawnTime = null;
+        }
     }
 }

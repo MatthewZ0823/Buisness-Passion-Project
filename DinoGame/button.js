@@ -1,6 +1,7 @@
 const calibrateButtonElement = document.getElementById("calibrate-button");
 const calibrationTimerElement = document.getElementById("calibration-timer");
 const heightInputElement = document.getElementById("height-input");
+const startGameButtonElement = document.getElementById("start-game-button");
 
 const cameraSFX = new Audio('SoundEffects/CameraSFX.mp3')
 
@@ -21,3 +22,8 @@ function updateCalibration() {
         calibrationTimerElement.innerHTML = Date.now() - clickStartTime;
     } 
 }
+
+function handleStartGameButton() {
+    dinoGame.isGameStarted = true;
+}
+startGameButtonElement.addEventListener("click", handleStartGameButton);
