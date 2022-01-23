@@ -55,14 +55,10 @@ async function getPoses() {
   updateCalibration();
   dinoGame.getLandmarks(poses.length != 0 ? poses[0].keypoints : null);
   dinoGame.drawFloor(bgCanvasCtx);
-  if (dinoGame.isGameStarted) {
-    dinoGame.updateObstacleGenerator();
-    dinoGame.drawAllScaledObstacles(bgCanvasCtx);
-    console.log(dinoGame.isPlayerTouchingObstacle() || dinoGame.isLineTouchingObstacles());
-    if (dinoGame.isPlayerTouchingObstacle() || dinoGame.isLineTouchingObstacles()) {
-      dinoGame.isGameStarted = false;
-    }
-  }
+
+  dinoGame.updateObstacleGenerator();
+  dinoGame.drawAllScaledObstacles(bgCanvasCtx);
+  console.log(dinoGame.isPlayerTouchingObstacle() || dinoGame.isLineTouchingObstacles());
 
   // Queue up getPoses again
   requestAnimationFrame(await getPoses);

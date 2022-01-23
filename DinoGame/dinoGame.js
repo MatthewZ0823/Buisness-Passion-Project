@@ -11,7 +11,9 @@ class DinoGame {
         this.floorYLevel;
 
         this.nextObstacleSpawnTime = null;
-        this.isGameStarted = false;
+        this.isAlive = false;
+        this.startTime;
+        this.timeSurvived;
 
         this.obstacles = [];
 
@@ -49,6 +51,44 @@ class DinoGame {
         });
     }
 
+    createTestBox() {
+        const testBoxCopy = Object.assign({}, testBox);
+        this.obstacles.push(testBoxCopy); 
+    }
+
+    createShortObstacle() {
+        this.obstacles.push({
+            x: 10,
+            y: (this.floorYLevel / this.scale) - 20,
+            width: 20,
+            height: 20,
+            speed: 10, 
+            color: 'green',
+        });
+    }
+
+    createTallObstacle() {
+        this.obstacles.push({
+            x: 10,
+            y: (this.floorYLevel / this.scale) - 40,
+            width: 20,
+            height: 40,
+            speed: 10,
+            color: 'lime',
+        });
+    }
+
+    createDuckObstacle() {
+        this.obstacles.push({
+            x: 10,
+            y: 0,
+            width: 30,
+            height: this.floorYLevel / this.scale - this.realHeight + this.realHeight * 0.2,
+            speed: 10,
+            color: 'orange',
+        });
+    }
+
     drawObstacle(canvasCtx, x, y, width, height, boxColor) {
         const color = boxColor || 'black';
 
@@ -82,25 +122,13 @@ class DinoGame {
         }
     }
 
-    createTestBox() {
-        const testBoxCopy = Object.assign({}, testBox);
-        this.obstacles.push(testBoxCopy); 
-    }
-
-    createShortObstacle() {
-        this.obstacles.push({
-            x: 10,
-            y: (this.floorYLevel / this.scale) - 20,
-            width: 20,
-            height: 20,
-            speed: 10, 
-            color: 'green',
-        });
-    }
-
     // Checks if any of the landmarks of the player are in bounds of any of the obstacles
     isPlayerTouchingObstacle() {
         if (this.landmarks == null) {
+            return;
+        }
+
+        if (!this.isAlive) {
             return;
         }
 
@@ -113,6 +141,7 @@ class DinoGame {
                 if ((this.obstacles[j].x + this.obstacles[j].width) >= xPos && this.obstacles[j].x <= xPos) {
                     if ((this.obstacles[j].y + this.obstacles[j].height) >= yPos && this.obstacles[j].y <= yPos) {
                         this.reverbFartSFX.play();
+                        this.onDeath();
                         return true;
                     }
                 }
@@ -140,6 +169,10 @@ class DinoGame {
             return;
         }
 
+        if (!this.isAlive) {
+            return;
+        }
+
         for (let i = 0; i < this.obstacles.length; i++) {
             const obstacle = this.obstacles[i];
             
@@ -152,24 +185,28 @@ class DinoGame {
                 // Check if intersects top line
                 if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y, obstacle.x + obstacle.width, obstacle.y)) {
                     this.reverbFartSFX.play();
+                    this.onDeath();
                     return true;
                 }
                 
                 // Check if intersects left line
                 if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y, obstacle.x, obstacle.y + obstacle.height)) {
                     this.reverbFartSFX.play();
+                    this.onDeath();
                     return true;
                 }
                 
                 // Check if intersects bot line
                 if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x, obstacle.y + obstacle.height, obstacle.x + obstacle.width, obstacle.y + obstacle.height)) {
                     this.reverbFartSFX.play();
+                    this.onDeath();
                     return true;
                 }
                 
                 // Check if intersects right line
                 if(this.intersects(xPos1, yPos1, xPos2, yPos2, obstacle.x + obstacle.width, obstacle.y, obstacle.x + obstacle.width, obstacle.y + obstacle.height)) {
                     this.reverbFartSFX.play();
+                    this.onDeath();
                     return true;
                 }
             }
@@ -183,13 +220,35 @@ class DinoGame {
     }
 
     updateObstacleGenerator() {
+        if (!this.isAlive) {
+            this.obstacles = [];
+            this.nextObstacleSpawnTime = null;
+            return;
+        }
+
         if (this.nextObstacleSpawnTime === null) {
             this.nextObstacleSpawnTime = Date.now() + Math.floor(Math.random() * 2001) + 2000;
         }
 
+        // Check if it's time to spawn an obstacle
         if (Date.now() >= this.nextObstacleSpawnTime) {
-            this.createShortObstacle();
+            const randNum = Math.floor(Math.random() * 10);
+
+            if (randNum <= 5) {
+                this.createShortObstacle();
+            } else if (randNum <= 8) {
+                this.createDuckObstacle();
+            } else {
+                this.createTallObstacle();
+            }
+
             this.nextObstacleSpawnTime = null;
         }
+    }
+
+    onDeath() {
+        this.timeSurvived = (Date.now() - this.startTime) / 1000;
+        document.getElementById('score').innerText = `Time survived: ${this.timeSurvived} seconds`
+        this.isAlive = false;
     }
 }

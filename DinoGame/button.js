@@ -24,6 +24,7 @@ function updateCalibration() {
 }
 
 function handleStartGameButton() {
-    dinoGame.isGameStarted = true;
+    dinoGame.isAlive = true;
+    dinoGame.startTime = Date.now();
 }
 startGameButtonElement.addEventListener("click", handleStartGameButton);
