@@ -19,9 +19,9 @@ class DinoGame {
 
     calibratePlayerHeight(realHeight) {
         this.realHeight = realHeight;
-        this.photoHeight = Math.abs((this.landmarks[0].x - this.landmarks[30].x) * 640);
+        this.photoHeight = Math.abs(this.landmarks[0].y - this.landmarks[16].y);
         this.scale = this.photoHeight / this.realHeight;
-        this.floorYLevel = this.landmarks[30].x * 640;
+        this.floorYLevel = this.landmarks[16].y;
     }
 
     /**
@@ -78,10 +78,16 @@ class DinoGame {
         this.obstacles.push(defaultBoxCopy); 
     }
 
+    // Checks if any of the landmarks of the player are in bounds of any of the obstacles
     isPlayerTouchingObstacle() {
+        if (this.landmarks == null) {
+            return;
+        }
+
         for (let i = 0; i < this.landmarks.length; i++) {
-            const xPos = (1000 - (this.landmarks[i].y * 480 + 260)) * (1/this.scale);
-            const yPos = (this.landmarks[i].x * 640) * (1/this.scale);
+            // As of this piece of code, xPos and yPos are written in terms of cm on the global scale
+            const xPos = (this.landmarks[i].x + 260) * (1/this.scale);
+            const yPos = (this.landmarks[i].y) * (1/this.scale);
 
             for (let j = 0; j < this.obstacles.length; j++) {
                 if ((this.obstacles[j].x + this.obstacles[j].width) >= xPos && this.obstacles[j].x <= xPos) {
@@ -96,6 +102,6 @@ class DinoGame {
     }
 
     drawFloor(canvasCtx) {
-        this.drawObstacle(canvasCtx, 0, dinoGame.floorYLevel + 10, 1000, 100)
+        this.drawObstacle(canvasCtx, 0, dinoGame.floorYLevel + 10, 1000, 300);
     }
 }

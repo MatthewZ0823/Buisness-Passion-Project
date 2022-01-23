@@ -1,71 +1,20 @@
-const videoElement = document.getElementsByClassName('input_video')[0];
-const newVideoElement = document.getElementsByClassName('new_input_video')[0];
-const canvasElement = document.getElementsByClassName('output_canvas')[0];
-const canvasCtx = canvasElement.getContext('2d');
-const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
-const bgCanvasElement = document.getElementsByClassName('bg')[0];
-const bgCanvasCtx = bgCanvasElement.getContext('2d');
+const webcamEl = document.getElementById('webcam');
+const getPosesButtonEl = document.getElementById('get-poses');
+const poseRendererEl = document.getElementById('pose-renderer');
+const ctx = poseRendererEl.getContext('2d');
+const bgCanvasEl = document.getElementsByClassName('bg')[0];
+const bgCanvasCtx = bgCanvasEl.getContext('2d');
+
+const videoCopy = document.getElementById('video-copy');
+const videoCopyCtx = videoCopy.getContext('2d');
 
 const dinoGame = new DinoGame();
-
-let visionResults;
-
-function onResults(results) {
-  if (!results.poseLandmarks) {
-    return;
-  }
-
-  visionResults = results;
-
-  canvasCtx.save();
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-  // Only overwrite existing pixels.
-  canvasCtx.globalCompositeOperation = 'source-in';
-
-  // Only overwrite missing pixels.
-  canvasCtx.globalCompositeOperation = 'destination-atop';
-  canvasCtx.drawImage(
-      results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-  canvasCtx.globalCompositeOperation = 'source-over';
-  drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                 {color: '#fff6d4', lineWidth: 4});
-  drawLandmarks(canvasCtx, results.poseLandmarks,
-                {color: '#fff6d4', lineWidth: 2});
-  
-  canvasCtx.restore();
-
-  // grid.updateLandmarks(results.poseWorldLandmarks);
-
-  // Code to run dinogame
-  bgCanvasCtx.clearRect(0, 0, bgCanvasElement.width, bgCanvasElement.height);
-  updateCalibration();
-  dinoGame.getLandmarks(visionResults.poseLandmarks);
-  dinoGame.drawFloor(bgCanvasCtx);
-  dinoGame.drawAllScaledObstacles(bgCanvasCtx);
-  console.log(dinoGame.isPlayerTouchingObstacle(bgCanvasCtx));
-}
-
-
-const pose = new Pose({locateFile: (file) => {
-  return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-}});
-pose.setOptions({
-  modelComplexity: 0,
-  smoothLandmarks: true,
-  enableSegmentation: false,
-  smoothSegmentation: true,
-  minDetectionConfidence: 0.5,
-  minTrackingConfidence: 0.5
-});
-pose.onResults(onResults);
 
 // Gets the webcam footage and streams it on screen
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
-      newVideoElement.srcObject = stream;
+      webcamEl.srcObject = stream;
     })
     .catch(function (err0r) {
       console.log("Something went wrong!");
@@ -73,12 +22,84 @@ if (navigator.mediaDevices.getUserMedia) {
     });
 }
 
-// Not completely sure what this does, but it updates the vision every frame looks like
-const camera = new Camera(videoElement, {
-  onFrame: async () => {
-    await pose.send({image: newVideoElement});
-  },
-  width: 640,
-  height: 480
+let detector;
+let poses;
+
+function computeFrame() {
+  videoCopyCtx.drawImage(webcamEl, 0, 0);
+  requestAnimationFrame(computeFrame);
+};
+
+async function init() {
+  const detectorConfig = {
+    modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+    minPoseScore: 0.35,
+    enableTracking: true,
+  };
+  detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
+  getPoses();
+
+  videoCopyCtx.rotate(90 * Math.PI / 180);
+  videoCopyCtx.translate(0, videoCopy.width * -1);
+  computeFrame();
+}
+
+async function getPoses() {
+  poses = await detector.estimatePoses(videoCopy);
+  ctx.clearRect(0, 0, poseRendererEl.offsetWidth, poseRendererEl.offsetHeight);
+  renderAllKeypoints(ctx, poses);
+  renderAllConnections(ctx, poses);
+
+  // Code to run dinogame
+  bgCanvasCtx.clearRect(0, 0, bgCanvasEl.width, bgCanvasEl.height);
+  updateCalibration();
+  dinoGame.getLandmarks(poses.length != 0 ? poses[0].keypoints : null);
+  dinoGame.drawFloor(bgCanvasCtx);
+  dinoGame.drawAllScaledObstacles(bgCanvasCtx);
+  console.log(dinoGame.isPlayerTouchingObstacle(bgCanvasCtx));
+
+  // dinoGame.drawScaledObstacle(bgCanvasCtx, 300, 100, 10, 22);
+
+  dinoGame.createNewObstacle(300, 100, 10, 22, 0)
+
+  // Queue up getPoses again
+  requestAnimationFrame(await getPoses);
+}
+
+function renderAllKeypoints(ctx, poses) {
+  if (poses.length == 0) {
+    return;
+  }
+
+  for (let i = 0; i < poses[0].keypoints.length; i++) {
+    if (poses[0].keypoints[i].score >= 0.2) {
+      ctx.fillStyle = "red";
+      ctx.fillRect(poses[0].keypoints[i].x - 5, poses[0].keypoints[i].y - 5, 10, 10);
+    } 
+  }
+}
+
+function renderAllConnections(ctx, poses) {
+  if (poses.length == 0) {
+    return;
+  }
+  
+  for (let i = 0; i < keypointNeighbors.length; i++) {
+    const nodes = keypointNeighbors[i];
+
+    if (poses[0].keypoints[nodes[0]].score < 0.2 || poses[0].keypoints[nodes[1]].score < 0.2) {
+      continue;
+    }
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#FF0000";
+    ctx.beginPath();
+    ctx.moveTo(poses[0].keypoints[nodes[0]].x, poses[0].keypoints[nodes[0]].y);
+    ctx.lineTo(poses[0].keypoints[nodes[1]].x, poses[0].keypoints[nodes[1]].y);
+    ctx.stroke();
+  }
+}
+
+webcamEl.addEventListener('loadeddata', () => {
+  init();
 });
-camera.start();
