@@ -248,7 +248,7 @@ class DinoGame {
 
     onDeath() {
         this.timeSurvived = (Date.now() - this.startTime) / 1000;
-        document.getElementById('score').innerText = `Time survived: ${this.timeSurvived} seconds`
+        document.getElementById('score').innerText = `Le Temps a Survécu: ${this.timeSurvived} secondes`
         this.isAlive = false;
     }
 }

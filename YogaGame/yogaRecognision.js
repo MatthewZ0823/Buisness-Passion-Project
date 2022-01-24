@@ -165,7 +165,7 @@ class YogaRecognition {
 
         if (this.posesCompleted === 5) {
             console.log("Completed 5 Poses!");
-            this.yogaGameTextOutput.innerHTML = `Completed 5 Poses! You took ${(Date.now() - this.gameStartTime) / 1000} seconds, plus ${this.extraTime /1000} seconds extra. <br> Total: ${(Date.now() - this.gameStartTime + this.extraTime) / 1000} seconds`;
+            this.yogaGameTextOutput.innerHTML = `Terminé 5 Poses!  Vous avez pris ${(Date.now() - this.gameStartTime) / 1000} secondes, plus ${this.extraTime /1000} secondes supplémentaires. <br> Le Total: ${(Date.now() - this.gameStartTime + this.extraTime) / 1000} secondes`;
             this.missionPassedSoundEffect.play();
             this.posesCompleted = 0;
         }
