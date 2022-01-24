@@ -70,9 +70,9 @@ class DinoGame {
     createTallObstacle() {
         this.obstacles.push({
             x: 10,
-            y: (this.floorYLevel / this.scale) - 40,
+            y: (this.floorYLevel / this.scale) - 30,
             width: 20,
-            height: 40,
+            height: 30,
             speed: 10,
             color: 'lime',
         });
@@ -134,7 +134,7 @@ class DinoGame {
 
         for (let i = 0; i < this.landmarks.length; i++) {
             // As of this piece of code, xPos and yPos are written in terms of cm on the global scale
-            const xPos = (this.landmarks[i].x + 260) * (1/this.scale);
+            const xPos = (this.landmarks[i].x + 520) * (1/this.scale);
             const yPos = (this.landmarks[i].y) * (1/this.scale);
 
             for (let j = 0; j < this.obstacles.length; j++) {
@@ -177,9 +177,9 @@ class DinoGame {
             const obstacle = this.obstacles[i];
             
             for (let j = 0; j < keypointNeighbors.length; j++) {
-                const xPos1 = (this.landmarks[keypointNeighbors[j][0]].x + 260) * (1/this.scale);
+                const xPos1 = (this.landmarks[keypointNeighbors[j][0]].x + 520) * (1/this.scale);
                 const yPos1 = this.landmarks[keypointNeighbors[j][0]].y * (1/this.scale);
-                const xPos2 = (this.landmarks[keypointNeighbors[j][1]].x + 260) * (1/this.scale);
+                const xPos2 = (this.landmarks[keypointNeighbors[j][1]].x + 520) * (1/this.scale);
                 const yPos2 = this.landmarks[keypointNeighbors[j][1]].y * (1/this.scale);
 
                 // Check if intersects top line

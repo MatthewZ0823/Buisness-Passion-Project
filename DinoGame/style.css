@@ -15,7 +15,7 @@
     height: 640px; /** Set this equal to vision-container height **/
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: right;
 }
 
 .rotation-wrapper {

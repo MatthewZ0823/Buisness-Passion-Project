@@ -33,8 +33,9 @@ function computeFrame() {
 async function init() {
   const detectorConfig = {
     modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
-    minPoseScore: 0.35,
-    enableTracking: true,
+    minPoseScore: 0.30,
+    enableTracking: false,
+    multiPoseMaxDimension: 128,
   };
   detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
   getPoses();
